@@ -1,3 +1,4 @@
+import os
 from typing import Callable, Iterable
 import re
 import http.client
@@ -10,21 +11,18 @@ import redis
 class App:
     def __init__(self, handlers: dict):
         self.handlers = handlers
-        self.db = redis.StrictRedis(decode_responses=True)
+        self.db = redis.StrictRedis.from_url(os.getenv('REDIS_URL'), decode_responses=True)
 
     def __call__(self, environ: dict, start_response: Callable) -> Iterable:
         environ['db'] = self.db
         url = environ['PATH_INFO']
-        method = environ['REQUEST_METHOD']  # not used
 
-        print(environ)
-
-        handler, url_args = self.get_handler(url, method)
+        handler, url_args = self.get_handler(url)
 
         status_code, extra_headers, response_content = handler(environ, url_args)
 
         headers = {
-            'Content-Type': 'text/html;charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8'
         }
         headers.update(extra_headers)
 
@@ -34,7 +32,7 @@ class App:
         )
         return [response_content.encode('utf-8')]
 
-    def get_handler(self, url, method):
+    def get_handler(self, url):
         handler = None
         url_args = None
 
