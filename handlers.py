@@ -20,7 +20,7 @@ def index_handler(environ: dict, url_args: dict) -> tuple:
         access_token = db.get(f'{session_id}:access_token')
         data = {}
         url_to_get_user = f'https://api.vk.com/method/users.get?user_ids={user_id}&access_token={access_token}&v=5.102'
-        data['user'] = requests.get(url_to_get_user).json()['response']
+        data['user'] = requests.get(url_to_get_user).json()['response'][0]
         url_to_get_friends = f'https://api.vk.com/method/friends.get?user_id={user_id}&access_token={access_token}&fields=-&count=5&v=5.102'
         data['friends'] = requests.get(url_to_get_friends).json()['response']['items']
         content = get_index_template(data)
