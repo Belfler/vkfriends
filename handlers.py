@@ -1,8 +1,8 @@
-import json
+import os
 import urllib
 from uuid import uuid4
 
-from utils import parse_session_id_from_cookie
+from utils import parse_session_id_from_cookie, get_index_template
 
 import requests
 
@@ -18,13 +18,14 @@ def index_handler(environ: dict, url_args: dict) -> tuple:
     if session_id and db.get(f'{session_id}:user_id'):
         user_id = db.get(f'{session_id}:user_id')
         access_token = db.get(f'{session_id}:access_token')
-        print(access_token)
-        url = f'https://api.vk.com/method/friends.get?user_id={user_id}&access_token={access_token}&count=5&v=5.102'
-        request = requests.get(url)
-        data = request.json()
-        content = json.dumps(data)
+        data = {}
+        url_to_get_user = f'https://api.vk.com/method/users.get?user_ids={user_id}&access_token={access_token}&v=5.102'
+        data['user'] = requests.get(url_to_get_user).json()['response']
+        url_to_get_friends = f'https://api.vk.com/method/friends.get?user_id={user_id}&access_token={access_token}&fields=-&count=5&v=5.102'
+        data['friends'] = requests.get(url_to_get_friends).json()['response']['items']
+        content = get_index_template(data)
     else:
-        content = f'<a href="https://oauth.vk.com/authorize?client_id=7188294&redirect_uri=https://{environ["HTTP_HOST"]}/login/&display=popup&scope=friends&v=5.102">Войти</a>'
+        content = f'<a href="https://oauth.vk.com/authorize?client_id=7188294&redirect_uri=https://{environ["HTTP_HOST"]}/login/&display=popup&scope=friends&v=5.102">Авторизоваться</a>'
 
     return 200, {}, content
 
@@ -40,7 +41,7 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
     code = urllib.parse.parse_qs(environ['QUERY_STRING']).get('code')
     if code:
         code = code[0]
-        url = f'https://oauth.vk.com/access_token?client_id=7188294&client_secret=mCbI0mURTZ9au8rOuFIE&redirect_uri=https://{environ["HTTP_HOST"]}/login/&code={code}'
+        url = f'https://oauth.vk.com/access_token?client_id=7188294&client_secret={os.getenv("CLIENT_SECRET")}&redirect_uri=https://{environ["HTTP_HOST"]}/login/&code={code}'
         request = requests.get(url)
         data = request.json()
 
