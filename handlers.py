@@ -24,7 +24,7 @@ def index_handler(environ: dict, url_args: dict) -> tuple:
         data = request.json()
         content = json.dumps(data)
     else:
-        content = '<a href="https://oauth.vk.com/authorize?client_id=7188294&redirect_uri=http://localhost:8000/login/&display=popup&scope=friends&v=5.102">Войти</a>'
+        content = f'<a href="https://oauth.vk.com/authorize?client_id=7188294&redirect_uri=https://{environ["HTTP_HOST"]}/login/&display=popup&scope=friends&v=5.102">Войти</a>'
 
     return 200, {}, content
 
@@ -40,7 +40,7 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
     code = urllib.parse.parse_qs(environ['QUERY_STRING']).get('code')
     if code:
         code = code[0]
-        url = f'https://oauth.vk.com/access_token?client_id=7188294&client_secret=mCbI0mURTZ9au8rOuFIE&redirect_uri=http://localhost:8000/login/&code={code}'
+        url = f'https://oauth.vk.com/access_token?client_id=7188294&client_secret=mCbI0mURTZ9au8rOuFIE&redirect_uri=https://{environ["HTTP_HOST"]}/login/&code={code}'
         request = requests.get(url)
         data = request.json()
 
