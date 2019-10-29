@@ -42,14 +42,14 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
     if code:
         code = code[0]
         url = f'https://oauth.vk.com/access_token?client_id=7188294&client_secret={os.getenv("CLIENT_SECRET")}&redirect_uri=https://{environ["HTTP_HOST"]}/login/&code={code}'
-        print(os.getenv('CLIENT_SECRET'))
         request = requests.get(url)
         data = request.json()
-
-        session_id = str(uuid4())
-        for field in ('user_id', 'access_token'):
-            db.set(f'{session_id}:{field}', data[field])
-            db.expire(f'{session_id}:{field}', data['expires_in'])
-        headers['Set-Cookie'] = f'sessionid={session_id}; path=/; max-age={data["expires_in"]}'
+        
+        if 'error' not in data:
+            session_id = str(uuid4())
+            for field in ('user_id', 'access_token'):
+                db.set(f'{session_id}:{field}', data[field])
+                db.expire(f'{session_id}:{field}', data['expires_in'])
+            headers['Set-Cookie'] = f'sessionid={session_id}; path=/; max-age={data["expires_in"]}'
 
     return 303, headers, ''
