@@ -51,22 +51,3 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
         headers['Set-Cookie'] = f'sessionid={session_id}; path=/; max-age={data["expires_in"]}'
 
     return 303, headers, ''
-
-
-def logout_handler(environ: dict, url_args: dict) -> tuple:
-    """
-    Delete session id from database and redirect to index page.
-    """
-    db = environ['db']
-
-    headers = {'Location': f'http://{environ["HTTP_HOST"]}/'}
-
-    if 'HTTP_COOKIE' in environ:
-        session_id = parse_session_id_from_cookie(environ['HTTP_COOKIE'])
-    else:
-        session_id = None
-
-    if session_id:
-        db.delete(session_id)
-
-    return 303, headers, ''

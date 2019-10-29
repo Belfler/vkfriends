@@ -3,7 +3,7 @@ from typing import Callable, Iterable
 import re
 import http.client
 
-from handlers import index_handler, login_handler, logout_handler
+from handlers import index_handler, login_handler
 
 import redis
 
@@ -57,7 +57,6 @@ class App:
 handlers = {
     r'^/$': index_handler,
     r'^/login/$': login_handler,
-    r'^/logout/$': logout_handler,
 }
 
 app = App(handlers)
