@@ -42,6 +42,7 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
     if code:
         code = code[0]
         url = f'https://oauth.vk.com/access_token?client_id=7188294&client_secret={os.getenv("CLIENT_SECRET")}&redirect_uri=https://{environ["HTTP_HOST"]}/login/&code={code}'
+        print(os.getenv('CLIENT_SECRET'))
         request = requests.get(url)
         data = request.json()
 
