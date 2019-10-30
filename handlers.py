@@ -8,6 +8,9 @@ import requests
 
 
 def index_handler(environ: dict, url_args: dict) -> tuple:
+    """
+    If there's correct session id in user's cookie handler displays his friends otherwise it suggests to authorize.
+    """
     db = environ['db']
 
     if 'HTTP_COOKIE' in environ:
@@ -36,7 +39,7 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
     """
     db = environ['db']
 
-    headers = {'Location': f'http://{environ["HTTP_HOST"]}/'}
+    headers = {'Location': f'https://{environ["HTTP_HOST"]}/'}
 
     code = urllib.parse.parse_qs(environ['QUERY_STRING']).get('code')
     if code:
@@ -44,7 +47,7 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
         url = f'https://oauth.vk.com/access_token?client_id=7188294&client_secret={os.getenv("CLIENT_SECRET")}&redirect_uri=https://{environ["HTTP_HOST"]}/login/&code={code}'
         request = requests.get(url)
         data = request.json()
-        
+
         if 'error' not in data:
             session_id = str(uuid4())
             for field in ('user_id', 'access_token'):
