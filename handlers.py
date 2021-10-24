@@ -53,6 +53,6 @@ def login_handler(environ: dict, url_args: dict) -> tuple:
             for field in ('user_id', 'access_token'):
                 db.set(f'{session_id}:{field}', data[field])
                 db.expire(f'{session_id}:{field}', data['expires_in'])
-            headers['Set-Cookie'] = f'sessionid={session_id}; path=/; max-age={data["expires_in"]}'
+            headers['Set-Cookie'] = f'sessionid={session_id}; path=/; max-age={data["expires_in"]}; httponly; secure'
 
     return 303, headers, ''
