@@ -1,1 +1,1 @@
-web: gunicorn --log-file=- app:vkfriends/app
+web: gunicorn --log-file=- vkfriends.app:app

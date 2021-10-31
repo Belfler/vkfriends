@@ -2,7 +2,7 @@ import os
 import urllib
 from uuid import uuid4
 
-from utils import parse_session_id_from_cookie, get_index_template
+from .utils import parse_session_id_from_cookie, get_index_template
 
 import requests
 
